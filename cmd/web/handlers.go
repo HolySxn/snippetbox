@@ -9,24 +9,29 @@ import (
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != http.MethodPost {
+	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
 	}
 
-	ts, err := template.ParseFiles("./ui/html/pages/home.html")
-	if err != nil{
+	files := []string{
+		"./ui/html/base.html",
+		"./ui/html/pages/home.html",
+		"./ui/html/partials/nav.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	err = ts.Execute(w, nil)
-	if err != nil{
+	err = ts.ExecuteTemplate(w, "base", nil)
+	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
-	w.Write([]byte("Hello from Snippetbox"))
 }
 
 func snippetView(w http.ResponseWriter, r *http.Request) {
